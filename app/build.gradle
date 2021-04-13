@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
 
-
+    dataBinding{ enabled true }
     compileSdkVersion 29
 
     defaultConfig {
@@ -29,7 +29,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-
+apply plugin:'kotlin-kapt'
 dependencies {
     implementation "com.squareup.retrofit2:retrofit:2.+"
     implementation "com.squareup.retrofit2:converter-gson:2.+"
