@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">RandomKeyWord</string>
+    <string name="connection_error">연결 에러!</string>
+    <string name="xml_error">xml파일에러!</string>
 </resources>
