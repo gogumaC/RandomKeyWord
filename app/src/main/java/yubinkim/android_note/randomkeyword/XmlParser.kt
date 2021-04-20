@@ -31,7 +31,8 @@ class XmlParser {
     @Throws(XmlPullParserException::class, IOException::class)
     private fun readFeed(parser: XmlPullParser): List<Word> {
         val words = mutableListOf<Word>()
-
+        //require은 약간 여기에 name의  state로 해줘느낌
+        //내 들어가고싶거나 나가고싶은 파서위치 name에 넣고 상태넣으면 그렇게 해주는듯
         //parser.require(XmlPullParser.START_TAG, nameSpace, "feed")
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG) {
@@ -54,20 +55,40 @@ class XmlParser {
     private fun readItem(parser: XmlPullParser): Word {
         parser.require(XmlPullParser.START_TAG, nameSpace, "item")
         var word: String? = null
-
+        var sense:Sense
         var position: String? = null
         var definition: String? = null
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG) continue
             when (parser.name) {
                 "word" -> word = readWord(parser)
-                "pos" -> position = readPosition(parser)
-                "definition" -> definition = readDefinition(parser)
+                "sense" -> {
+                    sense=readSense(parser)
+                    position=sense.position
+                    definition=sense.definition
+                }
                 else -> skip(parser)
             }
         }
         return Word(word, position, definition)
     }
+
+@Throws(XmlPullParserException::class, IOException::class)
+private fun readSense(parser: XmlPullParser): Sense {
+    parser.require(XmlPullParser.START_TAG, nameSpace, "sense")
+    var position: String? = null
+    var definition: String? = null
+    while (parser.next() != XmlPullParser.END_TAG) {
+        if (parser.eventType != XmlPullParser.START_TAG) continue
+        when (parser.name) {
+            "pos" -> position = readPosition(parser)
+            "definition" -> definition = readDefinition(parser)
+            else -> skip(parser)
+        }
+    }
+    return Sense(position, definition)
+}
+data class Sense(val position:String?,val definition: String?)
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun readWord(parser: XmlPullParser): String {
@@ -79,9 +100,9 @@ class XmlParser {
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun readPosition(parser: XmlPullParser): String {
-        parser.require(XmlPullParser.START_TAG, nameSpace, "position")
+        parser.require(XmlPullParser.START_TAG, nameSpace, "pos")
         val position = readText(parser)
-        parser.require(XmlPullParser.END_TAG, nameSpace, "position")
+        parser.require(XmlPullParser.END_TAG, nameSpace, "pos")
         return position
     }
 
